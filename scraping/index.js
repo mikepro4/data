@@ -150,22 +150,28 @@ function searchVideos(ticker, fullTicker) {
 
 function matchTitle(video, ticker, fullTicker) {
 
-    if(fullTicker.altNames.length > 0) {
-        let valid = false
-
-        fullTicker.altNames.map((name) => {
-            console.log(name)
-            if(video.title.indexOf(name) !== -1) {
-                valid = true
-            }
-        })
-
-        return valid
-
+    let newVideo = video.title.toUpperCase()
+    if(newVideo.indexOf(ticker) !== -1) {
+        return true
     } else {
-        let newVideo = video.title.toUpperCase()
-        return newVideo.indexOf(ticker) !== -1
+        if(fullTicker.altNames.length > 0) {
+            let valid = false
+    
+            fullTicker.altNames.map((name) => {
+                console.log(name)
+                if(video.title.indexOf(name) !== -1) {
+                    valid = true
+                }
+            })
+    
+            return valid
+    
+        } else {
+            
+        }
     }
+
+   
     // return video.title.includes(ticker) !== -1
     // return video.title.match(new RegExp(ticker))
     // return (new RegExp(video.title)).test(ticker)
