@@ -150,10 +150,7 @@ function searchVideos(ticker, fullTicker) {
 
 function matchTitle(video, ticker, fullTicker) {
 
-    let newVideo = video.title.toUpperCase()
-    if(newVideo.indexOf(ticker) !== -1) {
-        return true
-    } else {
+    if(fullTicker.strictNameCheck) {
         if(fullTicker.altNames.length > 0) {
             let valid = false
     
@@ -166,11 +163,30 @@ function matchTitle(video, ticker, fullTicker) {
     
             return valid
     
+        } 
+    } else {
+        let newVideo = video.title.toUpperCase()
+        if(newVideo.indexOf(ticker) !== -1) {
+            return true
         } else {
-            
+            if(fullTicker.altNames.length > 0) {
+                let valid = false
+        
+                fullTicker.altNames.map((name) => {
+                    console.log(name)
+                    if(video.title.indexOf(name) !== -1) {
+                        valid = true
+                    }
+                })
+        
+                return valid
+        
+            } else {
+                
+            }
         }
     }
-
+    
    
     // return video.title.includes(ticker) !== -1
     // return video.title.match(new RegExp(ticker))
