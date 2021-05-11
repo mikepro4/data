@@ -38,7 +38,8 @@ let scraperStatus = {
     previousCycle: null,
     useSmartproxy: false,
     // sorting: "CAISBAgCEAE"
-    sorting: "CAASBAgCEAE"
+    sorting: "CAASBAgCEAE",
+    delay: 1
 }
 
 module.exports.start = () => {
@@ -109,7 +110,7 @@ loadFirstTicker = async (req, res) => {
                         ticker: symbol[0].metadata.symbol,
                         count: results[1]
                     });
-                }, 10)
+                }, scraperStatus.delay)
                 
             }
 
@@ -867,7 +868,7 @@ loadFirstTicker = async (req, res) => {
                         ticker: symbol[0].metadata.symbol,
                         count: results[1]
                     });
-                }, 10)
+                }, scraperStatus.delay)
                 
             }
 
@@ -906,14 +907,14 @@ loadNextTicker = async (req, res) => {
                             if(scraperStatus.active) {
                                 loadFirstTicker()
                             }
-                        }, 10)
+                        }, scraperStatus.delay)
                     }
 
                     return console.log({
                         ticker: symbol[0].metadata.symbol,
                         count: results[1]
                     });
-                }, 10)
+                }, scraperStatus.delay)
             }
         }
     );
@@ -943,7 +944,7 @@ loadFirstTickerCount = async (req, res) => {
 
                     // updateTickerVideoCount(finalSymbol)
                     loadNextTickerCount()
-                }, 10)
+                }, scraperStatus.delay)
                 
             }
 
@@ -977,7 +978,7 @@ loadNextTickerCount = async (req, res) => {
                     } else{
                         scraperStatus.currentTickerCount = 0
                     }
-                }, 10)
+                }, scraperStatus.delay)
             }
         }
     );
