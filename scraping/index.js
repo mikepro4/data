@@ -236,7 +236,7 @@ function checkVideo(video, ticker, fullTicker) {
 
                             if(newVideo) {
 
-                                channelCheck(video)
+                                // channelCheck(video)
                                 
                                 io.emit('videoUpdate',{
                                     status: "add",
@@ -259,7 +259,7 @@ function checkVideo(video, ticker, fullTicker) {
 
                             if(newVideo2) {
 
-                                channelCheck(video)
+                                // channelCheck(video)
                                 
                                 io.emit('videoUpdate',{
                                     status: "add",
@@ -316,7 +316,7 @@ function checkVideo(video, ticker, fullTicker) {
                                                     updateTickerVideoCount(ticker)
                                                     createVideoLog(result, ticker, "update")
 
-                                                    channelCheck(video)
+                                                    // channelCheck(video)
                                                     io.emit('videoUpdate',{
                                                         status: "update",
                                                         ticker: ticker,
