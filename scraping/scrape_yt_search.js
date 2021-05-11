@@ -129,50 +129,37 @@ function load(query, options, proxy) {
 
     return new Promise((resolve, reject) => {
         request({
-            url: url,
-            // proxy: "http://" + proxy,
-            // proxy: proxy,
-            headers: {
-                'User-Agent': 'Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Googlebot/2.1; +http://www.google.com/bot.html) Safari/537.36.'
+            url: proxy + "get",
+            timeout: "15000",
+            method: 'POST',
+            body: {
+                url: url
             },
-            timeout: "15000"
+            json: true
         })
         .then((response) => {resolve(response)})
         .catch((err) => {
+            console.log(err)
             if(err.statusCode == 429) {
                 // console.log("banned " + proxy)
                 createProxyLog(proxy, query, "banned")
             } else {
+                console.log(err)
                 createProxyLog(proxy, query, "error")
             }
         })
     });
 
-
 }
 
-function getDebugID() {
-    return `${Math.random()}`.replace('.', '');
-}
-  
 
 exports.search = function(query, options, proxy) {
     return new Promise(async (resolve, reject) => {
         try {
-            options = { ...options, _debugid: getDebugID() };
+            options = { ...options};
             const page = await load(query, options, proxy);
             const data = await extractRenderData(page, proxy, query);
             const results = await parseData(data);
-
-            /**
-             * This will create 3 files in the debugger directory.
-             * It's not recommended to leave this enabled. Only when asked by DrKain via GitHub
-             */
-            // if (this.debug && this.debugger.enabled && options._debugid) {
-            //     this.debugger.dump(options._debugid, 'vids', results);
-            //     this.debugger.dump(options._debugid, 'opts', query );
-            //     this.debugger.dump(options._debugid, 'page', page);
-            // }
 
             resolve(results);
         } catch (e) {
