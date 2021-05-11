@@ -404,8 +404,7 @@ function updateTickerVideoCount(ticker) {
                 if (ticker) {
                     Video.find({
                         "createdAt":{ $gt:new Date(Date.now() - 24*60*60 * 1000)},
-                        approved: { $eq: true},
-                        linkedTickers: {
+                        approvedFor: {
                             $elemMatch: { symbol: { $eq: ticker.metadata.symbol} }
                         }
                     }, async(err, result) => {
@@ -431,8 +430,7 @@ function updateTickerVideoCount(ticker) {
 
                     Video.find({
                         "createdAt":{ $gt:new Date(Date.now() - 48*60*60 * 1000)},
-                        approved: { $eq: true},
-                        linkedTickers: {
+                        approvedFor: {
                             $elemMatch: { symbol: { $eq: ticker.metadata.symbol} }
                         }
                     }, async(err, result) => {
@@ -458,8 +456,7 @@ function updateTickerVideoCount(ticker) {
 
                     Video.find({
                         "createdAt":{ $gt:new Date(Date.now() - 24*7*60*60 * 1000)},
-                        approved: { $eq: true},
-                        linkedTickers: {
+                        approvedFor: {
                             $elemMatch: { symbol: { $eq: ticker.metadata.symbol} }
                         }
                     }, async(err, result) => {
@@ -488,8 +485,7 @@ function updateTickerVideoCount(ticker) {
                             $gt:new Date(Date.now() - 24*14*60*60 * 1000),
                             $lt:new Date(Date.now() - 24*7*60*60 * 1000)
                         },
-                        approved: { $eq: true},
-                        linkedTickers: {
+                        approvedFor: {
                             $elemMatch: { symbol: { $eq: ticker.metadata.symbol} }
                         }
                     }, async(err, result) => {
@@ -519,8 +515,7 @@ function updateTickerVideoCount(ticker) {
                         "createdAt":{ 
                             $gt:new Date(Date.now() - 24*60*60 * 1000)
                         },
-                        approved: { $eq: true},
-                        linkedTickers: {
+                        approvedFor: {
                             $elemMatch: { symbol: { $eq: ticker.metadata.symbol} }
                         }
                     }, async(err, result) => {
@@ -531,8 +526,7 @@ function updateTickerVideoCount(ticker) {
                                 $gt:new Date(Date.now() - 24*2*60*60 * 1000),
                                 $lt:new Date(Date.now() - 24*60*60 * 1000)
                             },
-                            approved: { $eq: true},
-                            linkedTickers: {
+                            approvedFor: {
                                 $elemMatch: { symbol: { $eq: ticker.metadata.symbol} }
                             }
                         }, async(err, result) => {
@@ -543,8 +537,7 @@ function updateTickerVideoCount(ticker) {
                                     $gt:new Date(Date.now() - 24*3*60*60 * 1000),
                                     $lt:new Date(Date.now() - 24*2*60*60 * 1000)
                                 },
-                                approved: { $eq: true},
-                                linkedTickers: {
+                                approvedFor: {
                                     $elemMatch: { symbol: { $eq: ticker.metadata.symbol} }
                                 }
                             }, async(err, result) => {
@@ -555,8 +548,7 @@ function updateTickerVideoCount(ticker) {
                                         $gt:new Date(Date.now() - 24*4*60*60 * 1000),
                                         $lt:new Date(Date.now() - 24*3*60*60 * 1000)
                                     },
-                                    approved: { $eq: true},
-                                    linkedTickers: {
+                                    approvedFor: {
                                         $elemMatch: { symbol: { $eq: ticker.metadata.symbol} }
                                     }
                                 }, async(err, result) => {
@@ -567,8 +559,7 @@ function updateTickerVideoCount(ticker) {
                                             $gt:new Date(Date.now() - 24*5*60*60 * 1000),
                                             $lt:new Date(Date.now() - 24*4*60*60 * 1000)
                                         },
-                                        approved: { $eq: true},
-                                        linkedTickers: {
+                                        approvedFor: {
                                             $elemMatch: { symbol: { $eq: ticker.metadata.symbol} }
                                         }
                                     }, async(err, result) => {
@@ -579,8 +570,7 @@ function updateTickerVideoCount(ticker) {
                                                 $gt:new Date(Date.now() - 24*6*60*60 * 1000),
                                                 $lt:new Date(Date.now() - 24*5*60*60 * 1000)
                                             },
-                                            approved: { $eq: true},
-                                            linkedTickers: {
+                                            approvedFor: {
                                                 $elemMatch: { symbol: { $eq: ticker.metadata.symbol} }
                                             }
                                         }, async(err, result) => {
@@ -592,8 +582,7 @@ function updateTickerVideoCount(ticker) {
                                                     $gt:new Date(Date.now() - 24*7*60*60 * 1000),
                                                     $lt:new Date(Date.now() - 24*6*60*60 * 1000)
                                                 },
-                                                approved: { $eq: true},
-                                                linkedTickers: {
+                                                approvedFor: {
                                                     $elemMatch: { symbol: { $eq: ticker.metadata.symbol} }
                                                 }
                                             }, async(err, result) => {
