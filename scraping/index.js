@@ -98,8 +98,8 @@ loadFirstTicker = async (req, res) => {
 
             if(symbol[0] && symbol[0].metadata) {
                 setTimeout(() => {
-
-                    searchVideos(finalSymbol)
+                    console.log(symbol[0])
+                    searchVideos(finalSymbol, symbol[0])
 
                     if(scraperStatus.active) {
                         loadNextTicker()
@@ -120,7 +120,7 @@ loadFirstTicker = async (req, res) => {
 
 /////////////////////////////////////////
 
-function searchVideos(ticker) {
+function searchVideos(ticker, fullTicker) {
 
     var sortArray = [
         'CAISBAgCEAE',
@@ -139,7 +139,7 @@ function searchVideos(ticker) {
         .then(results => {
             // console.log(results)
             results.videos.map((result, i) => {
-                return checkVideo(result, ticker)
+                return checkVideo(result, ticker, fullTicker)
             })
     }).catch((err) => console.log(err));
 }
@@ -148,21 +148,37 @@ function searchVideos(ticker) {
 
 /////////////////////////////////////////
 
-function matchTitle(video, ticker) {
+function matchTitle(video, ticker, fullTicker) {
+
+    if(fullTicker.altNames.length > 0) {
+        let valid = false
+
+        fullTicker.altNames.map((name) => {
+            console.log(name)
+            if(video.title.indexOf(name) !== -1) {
+                valid = true
+            }
+        })
+
+        return valid
+
+    } else {
+        let newVideo = video.title.toUpperCase()
+        return newVideo.indexOf(ticker) !== -1
+    }
     // return video.title.includes(ticker) !== -1
     // return video.title.match(new RegExp(ticker))
     // return (new RegExp(video.title)).test(ticker)
     // var r = /^video.title$/;
     // return(r.test(ticker))
-    let newVideo = video.title.toUpperCase()
-    return newVideo.indexOf(ticker) !== -1
+   
 }
 
 function matchChannel(video, ticker) {
     return video.channel.verified == true
 }
 
-function checkVideo(video, ticker) {
+function checkVideo(video, ticker, fullTicker) {
     return new Promise(async (resolve, reject) => {
         try {
             Video.findOne(
@@ -179,7 +195,7 @@ function checkVideo(video, ticker) {
 
                         let approved = false
                         
-                        if(matchTitle(video, ticker)) {
+                        if(matchTitle(video, ticker, fullTicker)) {
                             approved = true
                         }
 
@@ -226,7 +242,7 @@ function checkVideo(video, ticker) {
 
                             let approved = false
 
-                            if(matchTitle(video, ticker)) {
+                            if(matchTitle(video, ticker, fullTicker)) {
                                 approved = true
 
                                 Video.updateOne(
@@ -798,7 +814,7 @@ loadFirstTicker = async (req, res) => {
             if(symbol[0] && symbol[0].metadata) {
                 setTimeout(() => {
 
-                    searchVideos(finalSymbol)
+                    searchVideos(finalSymbol, symbol[0])
 
                     if(scraperStatus.active) {
                         loadNextTicker()
@@ -834,7 +850,7 @@ loadNextTicker = async (req, res) => {
             let symbol = results[0]
 
             if(symbol[0].metadata) {
-                searchVideos(symbol[0].metadata.symbol)
+                searchVideos(symbol[0].metadata.symbol, symbol[0])
 
                 setTimeout(() => {
                     if(scraperStatus.currentTicker < results[1] -1) {

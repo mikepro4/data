@@ -88,7 +88,7 @@ function parseData(data)  {
                         const result = getVideoData(item['videoRenderer']);
                         results.videos.push(result);
                     } catch (e) {
-                        console.log(e)
+                        // console.log(e)
                     }
                 }
 
@@ -97,7 +97,7 @@ function parseData(data)  {
                         const result = getStreamData(item['videoRenderer']);
                         results.streams.push(result);
                     } catch (e) {
-                        console.log(e)
+                        // console.log(e)
                     }
                 }
 
@@ -106,14 +106,14 @@ function parseData(data)  {
                         const result = getPlaylistData(item['playlistRenderer']);
                         results.playlists.push(result);
                     } catch (e) {
-                        console.log(e);
+                        // console.log(e);
                     }
                 }
             });
 
             resolve(results);
         } catch (e) {
-            console.warn(e);
+            // console.warn(e);
             reject('Fatal error when parsing result data. Please report this on GitHub');
         }
     });
