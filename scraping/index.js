@@ -906,7 +906,7 @@ loadNextTicker = async (req, res) => {
                             if(scraperStatus.active) {
                                 loadFirstTicker()
                             }
-                        }, 1000)
+                        }, 10)
                     }
 
                     return console.log({
