@@ -150,9 +150,9 @@ function searchVideos(ticker) {
 
 function matchTitle(video, ticker) {
     // return video.title.includes(ticker) !== -1
-    return video.title.match(new RegExp(ticker))
+    // return video.title.match(new RegExp(ticker))
     // return (new RegExp(video.title)).test(ticker)
-    // return video.title.indexOf(ticker) !== -1
+    return video.title.indexOf(ticker) !== -1
 }
 
 function matchChannel(video, ticker) {
