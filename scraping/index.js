@@ -149,7 +149,8 @@ function searchVideos(ticker) {
 /////////////////////////////////////////
 
 function matchTitle(video, ticker) {
-    return video.title.indexOf(ticker) !== -1
+    return video.title.includes(ticker) !== -1
+    // return video.title.indexOf(ticker) !== -1
 }
 
 function matchChannel(video, ticker) {
