@@ -109,7 +109,7 @@ loadFirstTicker = async (req, res) => {
                         ticker: symbol[0].metadata.symbol,
                         count: results[1]
                     });
-                }, 100)
+                }, 10)
                 
             }
 
@@ -867,7 +867,7 @@ loadFirstTicker = async (req, res) => {
                         ticker: symbol[0].metadata.symbol,
                         count: results[1]
                     });
-                }, 100)
+                }, 10)
                 
             }
 
@@ -913,7 +913,7 @@ loadNextTicker = async (req, res) => {
                         ticker: symbol[0].metadata.symbol,
                         count: results[1]
                     });
-                }, 100)
+                }, 10)
             }
         }
     );
@@ -943,7 +943,7 @@ loadFirstTickerCount = async (req, res) => {
 
                     updateTickerVideoCount(finalSymbol)
                     loadNextTickerCount()
-                }, 100)
+                }, 10)
                 
             }
 
