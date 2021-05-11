@@ -16,6 +16,11 @@ const Scraping = mongoose.model("scraping");
 
 const keys = require("./../config/keys");
 
+const parse = require('csv-parse');
+const fs = require('fs');
+
+const Tickers = require("./tickers.json");
+
 let io
 
 module.exports = socket => {
@@ -65,7 +70,69 @@ function initialSetup() {
                     scraperStatus.active = true // Change this later
 
                     if(scraperStatus.active) {
-                        loadFirstTicker()
+
+                        _.map(Tickers, async (record, i) => {
+                            setTimeout(() => {
+
+                            let finalSymbol = record.metadata.symbol
+
+                            searchVideos(finalSymbol, record)
+
+                            return console.log({
+                                ticker: record.metadata.symbol,
+                                count: Tickers.length
+                            });
+                            }, i*100)
+                        })
+                        // loadFirstTicker()
+
+                        // const processFile = async () => {
+                        //     records = []
+                        //     const parser = fs
+                        //     .createReadStream(`./tickers.json`)
+                        //     .pipe(parse({
+                        //         // CSV options if any
+                        //     }));
+                        //     // _.map(parser, async (record) => {
+                        //     //    console.log(record)
+                        //     // })
+                        //     for await (const record of parser) {
+                        //         // console.log(record)
+                        //         // // Work with each record
+                        //         // setTimeout(() => {
+                        //         //     console.log(parser)
+                        //         // }, i*record)
+                        
+                        //         // const ticker = await new Ticker({
+                        //         //     createdAt: new Date(),
+                        //         //     metadata: {
+                        //         //         symbol: record[0],
+                        //         //         name: record[1]
+                        //         //     }
+                        //         // }).save();
+                        
+                        //         records.push(record)
+                        //     }
+                        //     return records
+                        // }
+                        
+                        // (async () => {
+                        //     const records = await processFile()
+                        //     //   console.info(records);
+                        //       _.map(records, async (record, i) => {
+                        //           setTimeout(() => {
+                        //             console.log(record)
+
+                        //             searchVideos(record[6], symbol[0])
+
+                        //             return console.log({
+                        //                 ticker: symbol[0].metadata.symbol,
+                        //                 count: results[1]
+                        //             });
+                        //           }, i*1000)
+                        //         })
+                        //     })()
+                        
                     }
 
                     resolve(scraping)
@@ -79,45 +146,7 @@ function initialSetup() {
 
 initialSetup()
 
-/////////////////////////////////////////
 
-loadFirstTicker = async (req, res) => {
-    const query = Ticker.find()
-            .sort({ "metadata.symbol": "1" })
-            .skip(0)
-            .limit(1);
-            
-    return Promise.all(
-        [query, Ticker.find().countDocuments()]
-    ).then(
-        results => {
-            let symbol = results[0]
-            scraperStatus.currentTicker = 0
-            tickerCount = results[1]
-
-            let finalSymbol = symbol[0].metadata.symbol
-
-            if(symbol[0] && symbol[0].metadata) {
-                setTimeout(() => {
-                    console.log(symbol[0])
-                    searchVideos(finalSymbol, symbol[0])
-
-                    if(scraperStatus.active) {
-                        loadNextTicker()
-                    }
-
-                    return console.log({
-                        ticker: symbol[0].metadata.symbol,
-                        count: results[1]
-                    });
-                }, scraperStatus.delay)
-                
-            }
-
-            
-        }
-    );
-}
 
 /////////////////////////////////////////
 
@@ -187,19 +216,9 @@ function matchTitle(video, ticker, fullTicker) {
             }
         }
     }
-    
-   
-    // return video.title.includes(ticker) !== -1
-    // return video.title.match(new RegExp(ticker))
-    // return (new RegExp(video.title)).test(ticker)
-    // var r = /^video.title$/;
-    // return(r.test(ticker))
-   
+
 }
 
-function matchChannel(video, ticker) {
-    return video.channel.verified == true
-}
 
 function checkVideo(video, ticker, fullTicker) {
     return new Promise(async (resolve, reject) => {
@@ -237,13 +256,7 @@ function checkVideo(video, ticker, fullTicker) {
 
                             if(newVideo) {
 
-                                // channelCheck(video)
-                                
-                                io.emit('videoUpdate',{
-                                    status: "add",
-                                    ticker: ticker,
-                                    video: newVideo
-                                })
+                               
                                 resolve(video)
                             }
                         } else {
@@ -317,12 +330,7 @@ function checkVideo(video, ticker, fullTicker) {
                                                     // updateTickerVideoCount(ticker)
                                                     createVideoLog(result, ticker, "update")
 
-                                                    // channelCheck(video)
-                                                    io.emit('videoUpdate',{
-                                                        status: "update",
-                                                        ticker: ticker,
-                                                        video: result
-                                                    })
+                                                  
                                                     resolve(result)
                                                 }
                                             });
@@ -332,14 +340,6 @@ function checkVideo(video, ticker, fullTicker) {
                             }
 
                         } else {
-                            // console.log("reject video")
-
-                            // io.emit('videoUpdate', {
-                            //     status: "reject",
-                            //     ticker: ticker,
-                            //     video: result
-                            // })
-                            
                         }
                     }
                 }
@@ -347,314 +347,6 @@ function checkVideo(video, ticker, fullTicker) {
 
 
         } catch (e) {
-            reject(e);
-        }
-        
-    })
-}
-
-function channelCheck(video) {
-    Channel.findOne(
-        {
-            "metadata.link": { $eq: video.channel.link }
-        },
-        async(err, result) => {
-            if(!result) {
-                resolve()
-            } else {
-                if(result.approved) {
-
-                    Video.updateOne(
-                        {
-                            googleId: { $eq: video.id }
-                        },
-                        {
-                            $set: { approved: true }
-                        },
-                        async (err, info) => {
-                            if (info) {
-                                console.log("approved because of channel")
-                            }
-                        }
-                    );
-                }
-            }
-        }
-    )
-}
-
-// function fetchVideoSeries(ticker, days) {
-//     return new Promise(async (resolve, reject) => {
-//         try {
-//             let videoSeries = []
-//             var i;
-//             for (i = 0; i < days; i++) {
-
-//             }
-//         }catch (e) {
-//             reject(e);
-//         }
-//     })
-// }
-
-
-function updateTickerVideoCount(ticker) {
-    return new Promise(async (resolve, reject) => {
-        try {
-            Ticker.findOne({ "metadata.symbol": { $eq: ticker} }, async (err, ticker) => {
-                if (ticker) {
-                    Video.find({
-                        "createdAt":{ $gt:new Date(Date.now() - 24*60*60 * 1000)},
-                        approvedFor: {
-                            $elemMatch: { symbol: { $eq: ticker.metadata.symbol} }
-                        }
-                    }, async(err, result) => {
-                        if(!result) {
-                            resolve()
-                        } else {
-                            Ticker.update(
-                                {
-                                    "metadata.symbol": { $eq: ticker.metadata.symbol} 
-                                },
-                                {
-                                    $set: { last24hours: result.length }
-                                },
-                                async (err, info) => {
-                                    if (info) {
-                                        // console.log("updated count 24")
-                                        resolve(info)
-                                    }
-                                }
-                            );
-                        }
-                    })
-
-                    Video.find({
-                        "createdAt":{ $gt:new Date(Date.now() - 48*60*60 * 1000)},
-                        approvedFor: {
-                            $elemMatch: { symbol: { $eq: ticker.metadata.symbol} }
-                        }
-                    }, async(err, result) => {
-                        if(!result) {
-                            resolve()
-                        } else {
-                            Ticker.update(
-                                {
-                                    "metadata.symbol": { $eq: ticker.metadata.symbol} 
-                                },
-                                {
-                                    $set: { last48hours: result.length }
-                                },
-                                async (err, info) => {
-                                    if (info) {
-                                        // console.log("updated count 48")
-                                        resolve(info)
-                                    }
-                                }
-                            );
-                        }
-                    })
-
-                    Video.find({
-                        "createdAt":{ $gt:new Date(Date.now() - 24*7*60*60 * 1000)},
-                        approvedFor: {
-                            $elemMatch: { symbol: { $eq: ticker.metadata.symbol} }
-                        }
-                    }, async(err, result) => {
-                        if(!result) {
-                            resolve()
-                        } else {
-                            Ticker.update(
-                                {
-                                    "metadata.symbol": { $eq: ticker.metadata.symbol} 
-                                },
-                                {
-                                    $set: { thisWeek: result.length }
-                                },
-                                async (err, info) => {
-                                    if (info) {
-                                        // console.log("updated count 48")
-                                        resolve(info)
-                                    }
-                                }
-                            );
-                        }
-                    })
-
-                    Video.find({
-                        "createdAt":{ 
-                            $gt:new Date(Date.now() - 24*14*60*60 * 1000),
-                            $lt:new Date(Date.now() - 24*7*60*60 * 1000)
-                        },
-                        approvedFor: {
-                            $elemMatch: { symbol: { $eq: ticker.metadata.symbol} }
-                        }
-                    }, async(err, result) => {
-                        if(!result) {
-                            resolve()
-                        } else {
-                            Ticker.update(
-                                {
-                                    "metadata.symbol": { $eq: ticker.metadata.symbol} 
-                                },
-                                {
-                                    $set: { previousWeek: result.length }
-                                },
-                                async (err, info) => {
-                                    if (info) {
-                                        // console.log("updated count 48")
-                                        resolve(info)
-                                    }
-                                }
-                            );
-                        }
-                    })
-
-                    let week = []
-
-                    Video.find({
-                        "createdAt":{ 
-                            $gt:new Date(Date.now() - 24*60*60 * 1000)
-                        },
-                        approvedFor: {
-                            $elemMatch: { symbol: { $eq: ticker.metadata.symbol} }
-                        }
-                    }, async(err, result) => {
-                        week.push(result.length)
-
-                        Video.find({
-                            "createdAt":{ 
-                                $gt:new Date(Date.now() - 24*2*60*60 * 1000),
-                                $lt:new Date(Date.now() - 24*60*60 * 1000)
-                            },
-                            approvedFor: {
-                                $elemMatch: { symbol: { $eq: ticker.metadata.symbol} }
-                            }
-                        }, async(err, result) => {
-                            week.push(result.length)
-
-                            Video.find({
-                                "createdAt":{ 
-                                    $gt:new Date(Date.now() - 24*3*60*60 * 1000),
-                                    $lt:new Date(Date.now() - 24*2*60*60 * 1000)
-                                },
-                                approvedFor: {
-                                    $elemMatch: { symbol: { $eq: ticker.metadata.symbol} }
-                                }
-                            }, async(err, result) => {
-                                week.push(result.length)
-
-                                Video.find({
-                                    "createdAt":{ 
-                                        $gt:new Date(Date.now() - 24*4*60*60 * 1000),
-                                        $lt:new Date(Date.now() - 24*3*60*60 * 1000)
-                                    },
-                                    approvedFor: {
-                                        $elemMatch: { symbol: { $eq: ticker.metadata.symbol} }
-                                    }
-                                }, async(err, result) => {
-                                    week.push(result.length)
-
-                                    Video.find({
-                                        "createdAt":{ 
-                                            $gt:new Date(Date.now() - 24*5*60*60 * 1000),
-                                            $lt:new Date(Date.now() - 24*4*60*60 * 1000)
-                                        },
-                                        approvedFor: {
-                                            $elemMatch: { symbol: { $eq: ticker.metadata.symbol} }
-                                        }
-                                    }, async(err, result) => {
-                                        week.push(result.length)
-
-                                        Video.find({
-                                            "createdAt":{ 
-                                                $gt:new Date(Date.now() - 24*6*60*60 * 1000),
-                                                $lt:new Date(Date.now() - 24*5*60*60 * 1000)
-                                            },
-                                            approvedFor: {
-                                                $elemMatch: { symbol: { $eq: ticker.metadata.symbol} }
-                                            }
-                                        }, async(err, result) => {
-                                            week.push(result.length)
-
-
-                                            Video.find({
-                                                "createdAt":{ 
-                                                    $gt:new Date(Date.now() - 24*7*60*60 * 1000),
-                                                    $lt:new Date(Date.now() - 24*6*60*60 * 1000)
-                                                },
-                                                approvedFor: {
-                                                    $elemMatch: { symbol: { $eq: ticker.metadata.symbol} }
-                                                }
-                                            }, async(err, result) => {
-                                                week.push(result.length)
-
-                                                // let growthRate24 = week[1] * 100 / week[0]
-                                                // let growthRate48 = (week[2] + week[3]) * 100 / (week[0] + week[1])
-                                                // let growthRate72 = (week[3] + week[4] + week[5]) * 100 / (week[0] + week[1] + week[2])
-
-                                                let growthRate24
-                                                let growthRate48
-                                                let growthRate72 
-
-                                                if(week[1] == 0) {
-                                                    growthRate24 = week[0] * 100
-                                                } else {
-                                                    growthRate24 = (week[0] * 100 / week[1]) - 100
-                                                }
-
-                                                if((week[2] + week[3]) == 0) {
-                                                    growthRate48 = (week[0] + week[1]) * 100
-                                                } else {
-                                                    growthRate48 = ((week[0] + week[1]) * 100 / (week[2] + week[3])) - 100
-                                                }
-
-                                                if((week[3] + week[4] + week[5]) == 0) {
-                                                    growthRate72 = (week[0] + week[1] + week[2]) * 100
-                                                } else {
-                                                    growthRate72 = ((week[0] + week[1] + week[2]) * 100 / (week[3] + week[4] + week[5])) - 100
-                                                }
-
-                                                // let growthRate24 = (week[0] * 100 / week[1]) - 100
-                                                // let growthRate48 = ((week[0] + week[1]) * 100 / (week[2] + week[3])) - 100
-                                                // let growthRate72 = ((week[0] + week[1] + week[2]) * 100 / (week[3] + week[4] + week[5])) - 100
-                                                let fullWeek = week[0] + week[1] + week[2] + week[3] + week[4] + week[5] + week[6]
-                                                let score = (fullWeek * 100 + week[0] * 250 + week[1] * 200 + growthRate24 * 175)/(100+250+200+175)
-
-
-                                                Ticker.update(
-                                                    {
-                                                        "metadata.symbol": { $eq: ticker.metadata.symbol} 
-                                                    },
-                                                    {
-                                                        $set: { 
-                                                            week: week,
-                                                            growthRate24: growthRate24,
-                                                            growthRate48: growthRate48,
-                                                            growthRate72: growthRate72,
-                                                            score: score
-                                                        }
-                                                    },
-                                                    async (err, info) => {
-                                                        if (info) {
-                                                            // console.log("updated count 48")
-                                                            resolve(info)
-                                                        }
-                                                    }
-                                                );
-                                            })
-                                        })
-                                    })
-                                })
-                            })
-                        })
-                        
-                    })
-
-                    resolve(ticker)
-                }
-            });
-        }catch (e) {
             reject(e);
         }
         
@@ -706,10 +398,7 @@ function createChannel(channel, ticker) {
             if(newChannel) {
                 // console.log("add channel")
                 createChannelLog(newChannel, ticker, "add")
-                io.emit('channelUpdate',{
-                    status: "add channel",
-                    channel: newChannel
-                })
+                
                 resolve(newChannel)
             }
         }catch (e) {
@@ -757,11 +446,7 @@ function linkToChannel(channel, ticker) {
                                             if (channel) {
                                                 // console.log("update channel")
                                                 createChannelLog(channel, ticker, "update")
-                                                io.emit('channelUpdate',{
-                                                    status: "update",
-                                                    ticker: ticker,
-                                                    channel: channel
-                                                })
+                                                
                                                 resolve(channel)
                                             }
                                         });
@@ -920,81 +605,3 @@ loadNextTicker = async (req, res) => {
     );
 }
 
-/////////////////////////////////////////
-
-loadFirstTickerCount = async (req, res) => {
-    const query = Ticker.find()
-            .sort({ "metadata.symbol": "1" })
-            .skip(0)
-            .limit(1);
-            
-    return Promise.all(
-        [query, Ticker.find().countDocuments()]
-    ).then(
-        results => {
-            let symbol = results[0]
-            scraperStatus.currentTickerCount = 0
-            tickerCount = results[1]
-
-            let finalSymbol = symbol[0].metadata.symbol
-
-
-            if(symbol[0] && symbol[0].metadata) {
-                setTimeout(() => {
-
-                    // updateTickerVideoCount(finalSymbol)
-                    loadNextTickerCount()
-                }, scraperStatus.delay)
-                
-            }
-
-            
-        }
-    );
-}
-
-/////////////////////////////////////////
-
-loadNextTickerCount = async (req, res) => {
-    scraperStatus.currentTickerCount = scraperStatus.currentTickerCount + 1
-
-    const query = Ticker.find()
-            .sort({ "metadata.symbol": "1" })
-            .skip(scraperStatus.currentTickerCount)
-            .limit(1);
-            
-    return Promise.all(
-        [query, Ticker.find().countDocuments()]
-    ).then(
-        results => {
-            let symbol = results[0]
-
-            if(symbol[0].metadata) {
-                // updateTickerVideoCount(symbol[0].metadata.symbol)
-
-                setTimeout(() => {
-                    if(scraperStatus.currentTickerCount < results[1] -1) {
-                        loadNextTickerCount()
-                    } else{
-                        scraperStatus.currentTickerCount = 0
-                    }
-                }, scraperStatus.delay)
-            }
-        }
-    );
-}
-
-
-var job = new CronJob(
-    // '0/30 * * * * *',
-    '0 * * * *',
-    function() {
-        console.log("run cron count")
-        // loadFirstTickerCount()
-    },
-    null,
-    true,
-    'America/Los_Angeles'
-);
-
-job.start()

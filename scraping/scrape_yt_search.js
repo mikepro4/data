@@ -54,8 +54,11 @@ function extractRenderData(page, proxy, query) {
                         item.itemSectionRenderer.contents.filter((c) => c['videoRenderer'] || c['playlistRenderer']).length
                     );
                 }).shift();
-
-                contents = render.itemSectionRenderer.contents;
+                if(render && render.itemSectionRenderer) {
+                    contents = render.itemSectionRenderer.contents;
+                } else {
+                    content = {}
+                }
             }
 
             // YouTube occasionally switches to a rich grid renderer.
