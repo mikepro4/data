@@ -20,6 +20,7 @@ const tickerSchema = new Schema({
     week: [],
     altNames: [],
     strictNameCheck: { type: Boolean, default: false },
+    type: String
 });
 
 tickerSchema.index({

@@ -215,35 +215,64 @@ function checkVideo(video, ticker, fullTicker) {
                         createVideoLog(video, ticker, "add")
                         updateTickerVideoCount(ticker)
 
-                        let approved = false
                         
                         if(matchTitle(video, ticker, fullTicker)) {
-                            approved = true
+
+                            const newVideo = await new Video({
+                                createdAt: new Date(),
+                                linkedTickers: [
+                                    {
+                                        symbol: ticker
+                                    }
+                                ],
+                                googleId: video.id,
+                                metadata: video,
+                                approvedFor: [
+                                    {
+                                        symbol: ticker
+                                    }
+                                ]
+                            }).save();
+
+                            if(newVideo) {
+
+                                channelCheck(video)
+                                
+                                io.emit('videoUpdate',{
+                                    status: "add",
+                                    ticker: ticker,
+                                    video: newVideo
+                                })
+                                resolve(video)
+                            }
+                        } else {
+                            const newVideo2 = await new Video({
+                                createdAt: new Date(),
+                                linkedTickers: [
+                                    {
+                                        symbol: ticker
+                                    }
+                                ],
+                                googleId: video.id,
+                                metadata: video,
+                            }).save();
+
+                            if(newVideo2) {
+
+                                channelCheck(video)
+                                
+                                io.emit('videoUpdate',{
+                                    status: "add",
+                                    ticker: ticker,
+                                    video: newVideo2
+                                })
+                                resolve(video)
+                            }
                         }
 
-                        const newVideo = await new Video({
-                            createdAt: new Date(),
-                            linkedTickers: [
-                                {
-                                    symbol: ticker
-                                }
-                            ],
-                            googleId: video.id,
-                            metadata: video,
-                            approved: approved
-                        }).save();
+                      
 
-                        if(newVideo) {
-
-                            channelCheck(video)
-                            
-                            io.emit('videoUpdate',{
-                                status: "add",
-                                ticker: ticker,
-                                video: newVideo
-                            })
-                            resolve(video)
-                        }
+                       
 
                         checkIfChannelExists(video.channel, ticker)
 
@@ -272,7 +301,10 @@ function checkVideo(video, ticker, fullTicker) {
                                         _id: result._id
                                     },
                                     {
-                                        $set: { linkedTickers: newLinked, approved: approved }
+                                        $set: { linkedTickers: newLinked },
+                                        $push: { approvedFor : {
+                                            symbol: ticker
+                                        }}
                                     },
                                     async (err, info) => {
                                         if (info) {
