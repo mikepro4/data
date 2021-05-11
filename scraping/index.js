@@ -989,7 +989,7 @@ var job = new CronJob(
     '0 * * * *',
     function() {
         console.log("run cron count")
-        loadFirstTickerCount()
+        // loadFirstTickerCount()
     },
     null,
     true,
