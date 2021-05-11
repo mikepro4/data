@@ -213,7 +213,7 @@ function checkVideo(video, ticker, fullTicker) {
                     if(!result) {
                         console.log("add video")
                         createVideoLog(video, ticker, "add")
-                        updateTickerVideoCount(ticker)
+                        // updateTickerVideoCount(ticker)
 
                         
                         if(matchTitle(video, ticker, fullTicker)) {
@@ -313,7 +313,7 @@ function checkVideo(video, ticker, fullTicker) {
                                             Video.findOne({ _id: result._id }, async (err, result) => {
                                                 if (result) {
                                                     console.log("update video")
-                                                    updateTickerVideoCount(ticker)
+                                                    // updateTickerVideoCount(ticker)
                                                     createVideoLog(result, ticker, "update")
 
                                                     // channelCheck(video)
@@ -941,7 +941,7 @@ loadFirstTickerCount = async (req, res) => {
             if(symbol[0] && symbol[0].metadata) {
                 setTimeout(() => {
 
-                    updateTickerVideoCount(finalSymbol)
+                    // updateTickerVideoCount(finalSymbol)
                     loadNextTickerCount()
                 }, 10)
                 
@@ -969,7 +969,7 @@ loadNextTickerCount = async (req, res) => {
             let symbol = results[0]
 
             if(symbol[0].metadata) {
-                updateTickerVideoCount(symbol[0].metadata.symbol)
+                // updateTickerVideoCount(symbol[0].metadata.symbol)
 
                 setTimeout(() => {
                     if(scraperStatus.currentTickerCount < results[1] -1) {
