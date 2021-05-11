@@ -228,37 +228,38 @@ function checkVideo(video, ticker) {
 
                             if(matchTitle(video, ticker)) {
                                 approved = true
+
+                                Video.updateOne(
+                                    {
+                                        _id: result._id
+                                    },
+                                    {
+                                        $set: { linkedTickers: newLinked, approved: approved }
+                                    },
+                                    async (err, info) => {
+                                        if (info) {
+
+
+                                            Video.findOne({ _id: result._id }, async (err, result) => {
+                                                if (result) {
+                                                    console.log("update video")
+                                                    updateTickerVideoCount(ticker)
+                                                    createVideoLog(result, ticker, "update")
+
+                                                    channelCheck(video)
+                                                    io.emit('videoUpdate',{
+                                                        status: "update",
+                                                        ticker: ticker,
+                                                        video: result
+                                                    })
+                                                    resolve(result)
+                                                }
+                                            });
+                                        }
+                                    }
+                                );
                             }
 
-                            Video.updateOne(
-                                {
-                                    _id: result._id
-                                },
-                                {
-                                    $set: { linkedTickers: newLinked, approved: approved }
-                                },
-                                async (err, info) => {
-                                    if (info) {
-
-
-                                        Video.findOne({ _id: result._id }, async (err, result) => {
-                                            if (result) {
-                                                console.log("update video")
-                                                updateTickerVideoCount(ticker)
-                                                createVideoLog(result, ticker, "update")
-
-                                                channelCheck(video)
-                                                io.emit('videoUpdate',{
-                                                    status: "update",
-                                                    ticker: ticker,
-                                                    video: result
-                                                })
-                                                resolve(result)
-                                            }
-                                        });
-                                    }
-                                }
-                            );
                         } else {
                             // console.log("reject video")
 
