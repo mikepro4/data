@@ -152,10 +152,10 @@ function matchTitle(video, ticker) {
     // return video.title.includes(ticker) !== -1
     // return video.title.match(new RegExp(ticker))
     // return (new RegExp(video.title)).test(ticker)
-    var r = /^video.title$/;
-    return(r.test(ticker))
-    // let newVideo = video.title.toUpperCase()
-    // return newVideo.indexOf(ticker) !== -1
+    // var r = /^video.title$/;
+    // return(r.test(ticker))
+    let newVideo = video.title.toUpperCase()
+    return newVideo.indexOf(ticker) !== -1
 }
 
 function matchChannel(video, ticker) {
