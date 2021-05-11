@@ -171,7 +171,7 @@ function checkVideo(video, ticker) {
                         createVideoLog(video, ticker, "add")
                         updateTickerVideoCount(ticker)
 
-                        let approved 
+                        let approved = false
                         
                         if(matchTitle(video, ticker)) {
                             approved = true
@@ -218,7 +218,7 @@ function checkVideo(video, ticker) {
                                 }
                             ]
 
-                            let approved
+                            let approved = false
 
                             if(matchTitle(video, ticker)) {
                                 approved = true
