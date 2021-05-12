@@ -113,7 +113,7 @@ function searchAll() {
 
             searchVideos(finalSymbol, record)
 
-            if(i+1 == record.length) {
+            if(i+1 == Tickers.length) {
                 setTimeout(() => {
                     searchAll()
                 }, 10000)
