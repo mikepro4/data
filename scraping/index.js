@@ -58,31 +58,31 @@ module.exports.stop = () => {
 
 ///////////////////////////////////////
 
-// var job = new CronJob(
-//     // '0/30 * * * * *',
-//     '0 * * * *',
-//     function() {
-//         console.log("run cron count")
-//         // loadFirstTickerCount()
+var job = new CronJob(
+    // '0/30 * * * * *',
+    '0 * * * *',
+    function() {
+        console.log("run cron count")
+        // loadFirstTickerCount()
 
-//         _.map(Tickers, async (record, i) => {
-//             setTimeout(() => {
+        _.map(Tickers, async (record, i) => {
+            setTimeout(() => {
 
-//             updateTickerVideoCount(record)
+            updateLast24Hours(record)
 
-//             console.log({
-//                 type: "update count",
-//                 ticker: record.metadata.symbol,
-//             });
-//             }, i*500)
-//         })
-//     },
-//     null,
-//     true,
-//     'America/Los_Angeles'
-// );
+            console.log({
+                type: "update count",
+                ticker: record.metadata.symbol,
+            });
+            }, i*500)
+        })
+    },
+    null,
+    true,
+    'America/Los_Angeles'
+);
 
-// job.start()
+job.start()
 
 // Initial start
 
@@ -218,7 +218,7 @@ function checkVideo(video, ticker, fullTicker) {
                     if(!result) {
                         console.log("add video")
                         // createVideoLog(video, ticker, "add")
-                        // updateTickerVideoCount(fullTicker)
+                        
 
                         
                         if(matchTitle(video, ticker, fullTicker)) {
@@ -241,7 +241,7 @@ function checkVideo(video, ticker, fullTicker) {
 
                             if(newVideo) {
 
-                               
+                                updateLast24Hours(fullTicker)
                                 resolve(video)
                             }
                         } else {
@@ -257,6 +257,7 @@ function checkVideo(video, ticker, fullTicker) {
                             }).save();
 
                             if(newVideo2) {
+                                updateLast24Hours(fullTicker)
                                 resolve(video)
                             }
                         }
@@ -292,6 +293,7 @@ function checkVideo(video, ticker, fullTicker) {
                                     async (err, info) => {
                                         if (info) {
                                             console.log("update video")
+                                            updateLast24Hours(fullTicker)
                                         }
                                     }
                                 );
@@ -476,6 +478,33 @@ function createVideoLog(video, ticker, type) {
         
     })
 }
+
+function updateLast24Hours(ticker) {
+
+    Video.find({
+        "createdAt":{ $gt:new Date(Date.now() - 24*60*60 * 1000)},
+        approvedFor: {
+            $elemMatch: { symbol: { $eq: ticker.metadata.symbol} }
+        }
+    }, async(err, result) => {
+        if(!result) {
+            resolve()
+        } else {
+            Ticker.updateOne(
+                {
+                    "metadata.symbol": { $eq: ticker.metadata.symbol} 
+                },
+                {
+                    $set: { last24hours: result.length }
+                },
+                async (err, info) => {
+                    if (info) {
+                        console.log("updated count 24",  ticker.metadata.symbol)
+                    }
+                }
+            );
+        }
+    })
 
 /////////////////////////////////////////
 
