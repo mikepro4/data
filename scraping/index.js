@@ -116,7 +116,7 @@ function searchAll() {
             if(i+1 == Tickers.length) {
                 setTimeout(() => {
                     searchAll()
-                }, 120000)
+                }, 250000)
             }
            
             return console.log({
@@ -155,7 +155,7 @@ function searchVideos(ticker, fullTicker) {
             results.videos.map((result, i) => {
                 setTimeout(() => {
                     checkVideo(result, ticker, fullTicker)
-                }, i*4000)
+                }, i*10000)
             })
     }).catch((err) => console.log(err));
 }
@@ -401,7 +401,7 @@ function linkToChannel(channel, ticker) {
                                         Channel.findOne({ _id: result._id }, async (err, channel) => {
                                             if (channel) {
                                                 // console.log("update channel")
-                                                createChannelLog(channel, ticker, "update")
+                                                // createChannelLog(channel, ticker, "update")
                                                 
                                                 resolve(channel)
                                             }
