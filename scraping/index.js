@@ -214,7 +214,7 @@ function checkVideo(video, ticker, fullTicker) {
 
                     if(!result) {
                         console.log("add video")
-                        createVideoLog(video, ticker, "add")
+                        // createVideoLog(video, ticker, "add")
                         // updateTickerVideoCount(fullTicker)
 
                         
@@ -288,16 +288,7 @@ function checkVideo(video, ticker, fullTicker) {
                                     },
                                     async (err, info) => {
                                         if (info) {
-
-
-                                            Video.findOne({ _id: result._id }, async (err, result) => {
-                                                if (result) {
-                                                    console.log("update video")
-                                                    // updateTickerVideoCount(fullTicker)
-                                                    createVideoLog(result, ticker, "update")
-                                                    resolve(result)
-                                                }
-                                            });
+                                            console.log("update video")
                                         }
                                     }
                                 );
@@ -360,7 +351,7 @@ function createChannel(channel, ticker) {
 
             if(newChannel) {
                 // console.log("add channel")
-                createChannelLog(newChannel, ticker, "add")
+                // createChannelLog(newChannel, ticker, "add")
                 resolve(newChannel)
             }
         }catch (e) {
