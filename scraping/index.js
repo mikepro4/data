@@ -121,6 +121,8 @@ function searchAll() {
            
             return console.log({
                 ticker: record.metadata.symbol,
+                i: i,
+                percent: (i*100/Tickers.length).toFixed(2),
                 count: Tickers.length
             });
 
