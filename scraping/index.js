@@ -60,7 +60,7 @@ module.exports.stop = () => {
 
 var job = new CronJob(
     // '0/30 * * * * *',
-    '0,30 * * * *',
+    '0 * * * *',
     function() {
         console.log("run cron count")
         // loadFirstTickerCount()
@@ -74,7 +74,7 @@ var job = new CronJob(
                 type: "update count",
                 ticker: record.metadata.symbol,
             });
-            }, i*1000)
+            }, i*500)
         })
     },
     null,
