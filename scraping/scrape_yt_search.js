@@ -34,9 +34,13 @@ function extractRenderData(page, proxy, query) {
 
             let render = null;
             let contents = [];
-            const primary = JSON.parse(data).contents
+            let primary = {}
+            if(JSON.parse(data).contents) {
+                primary = JSON.parse(data).contents
                 .twoColumnSearchResultsRenderer
                 .primaryContents;
+            }
+            
 
 
             // The renderer we want. This should contain all search result information
