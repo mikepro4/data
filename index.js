@@ -10,7 +10,8 @@ const timeout = require('connect-timeout')
 
 mongoose.Promise = global.Promise;
 const options = {
-	 useNewUrlParser: true
+	 useNewUrlParser: true,
+     poolSize: 1000
  }
 mongoose.connect(keys.mongoURI, options,
     function(err){
