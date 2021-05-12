@@ -116,7 +116,7 @@ function searchAll() {
             if(i+1 == record.length) {
                 setTimeout(() => {
                     searchAll()
-                }, 1000)
+                }, 10000)
             }
            
             return console.log({
@@ -124,7 +124,7 @@ function searchAll() {
                 count: Tickers.length
             });
 
-        }, i*100)
+        }, i*50)
     })
 }
 
@@ -153,7 +153,7 @@ function searchVideos(ticker, fullTicker) {
             results.videos.map((result, i) => {
                 setTimeout(() => {
                     checkVideo(result, ticker, fullTicker)
-                }, 2000)
+                }, i*1000)
             })
     }).catch((err) => console.log(err));
 }
