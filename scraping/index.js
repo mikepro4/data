@@ -92,7 +92,7 @@ function initialSetup() {
             Scraping.findOne({}, async (err, scraping) => {
                 if (scraping) {
                     // scraperStatus.active = scraping.scrapingSearchActive
-                    scraperStatus.active = true // Change this later
+                    scraperStatus.active = false // Change this later
 
                     if(scraperStatus.active) {
                         searchAll()
