@@ -58,31 +58,31 @@ module.exports.stop = () => {
 
 ///////////////////////////////////////
 
-var job = new CronJob(
-    // '0/30 * * * * *',
-    '0 * * * *',
-    function() {
-        console.log("run cron count")
-        // loadFirstTickerCount()
+// var job = new CronJob(
+//     // '0/30 * * * * *',
+//     '0 * * * *',
+//     function() {
+//         console.log("run cron count")
+//         // loadFirstTickerCount()
 
-        _.map(Tickers, async (record, i) => {
-            setTimeout(() => {
+//         _.map(Tickers, async (record, i) => {
+//             setTimeout(() => {
 
-            updateTickerVideoCount(record)
+//             updateTickerVideoCount(record)
 
-            console.log({
-                type: "update count",
-                ticker: record.metadata.symbol,
-            });
-            }, i*500)
-        })
-    },
-    null,
-    true,
-    'America/Los_Angeles'
-);
+//             console.log({
+//                 type: "update count",
+//                 ticker: record.metadata.symbol,
+//             });
+//             }, i*500)
+//         })
+//     },
+//     null,
+//     true,
+//     'America/Los_Angeles'
+// );
 
-job.start()
+// job.start()
 
 // Initial start
 
@@ -215,7 +215,7 @@ function checkVideo(video, ticker, fullTicker) {
                     if(!result) {
                         console.log("add video")
                         createVideoLog(video, ticker, "add")
-                        updateTickerVideoCount(fullTicker)
+                        // updateTickerVideoCount(fullTicker)
 
                         
                         if(matchTitle(video, ticker, fullTicker)) {
@@ -293,7 +293,7 @@ function checkVideo(video, ticker, fullTicker) {
                                             Video.findOne({ _id: result._id }, async (err, result) => {
                                                 if (result) {
                                                     console.log("update video")
-                                                    updateTickerVideoCount(fullTicker)
+                                                    // updateTickerVideoCount(fullTicker)
                                                     createVideoLog(result, ticker, "update")
                                                     resolve(result)
                                                 }
