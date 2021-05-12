@@ -92,7 +92,7 @@ function initialSetup() {
             Scraping.findOne({}, async (err, scraping) => {
                 if (scraping) {
                     // scraperStatus.active = scraping.scrapingSearchActive
-                    scraperStatus.active = false // Change this later
+                    scraperStatus.active = true // Change this later
 
                     if(scraperStatus.active) {
                         searchAll()
@@ -148,7 +148,7 @@ function searchVideos(ticker, fullTicker) {
             ticker, 
             {sp: sortArray[randomNumber]},
             "http://urlrouter1.herokuapp.com/",
-            io
+            fullTicker
         )
         .then(results => {
             // console.log(results)

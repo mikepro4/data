@@ -6,12 +6,21 @@ const mongoose = require("mongoose");
 
 const ProxyLog = mongoose.model("proxylogs");
 
-function getURL(query, options) {
+function getURL(query, options, fullTicker) {
     const url = new URL('/results', 'https://www.youtube.com');
     let sp = [(options.type || 'video')];
+    let keyword = ""
+
+    if(fullTicker.type == "regular") {
+        keyword = " stock"
+    }
+
+    if(fullTicker.type == "crypto") {
+        keyword = " crypto"
+    }
 
     url.search = new URLSearchParams({
-        search_query: query + " stock"
+        search_query: query + keyword
     }).toString();
 
     if (options.sp) sp = options.sp;
@@ -131,8 +140,8 @@ function parseData(data)  {
      * @param query Search query
      * @param options Search options
      */
-function load(query, options, proxy) {
-    const url = getURL(query, options);
+function load(query, options, proxy, fullTicker) {
+    const url = getURL(query, options, fullTicker);
 
     return new Promise((resolve, reject) => {
         request({
@@ -160,11 +169,11 @@ function load(query, options, proxy) {
 }
 
 
-exports.search = function(query, options, proxy) {
+exports.search = function(query, options, proxy, fullTicker) {
     return new Promise(async (resolve, reject) => {
         try {
             options = { ...options};
-            const page = await load(query, options, proxy);
+            const page = await load(query, options, proxy, fullTicker);
             const data = await extractRenderData(page, proxy, query);
             const results = await parseData(data);
 
