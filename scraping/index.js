@@ -116,7 +116,7 @@ function searchAll() {
             if(i+1 == Tickers.length) {
                 setTimeout(() => {
                     searchAll()
-                }, 10000)
+                }, 120000)
             }
            
             return console.log({
