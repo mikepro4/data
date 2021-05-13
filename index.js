@@ -53,6 +53,8 @@ require("./models/Notification");
 require("./models/Post");
 require("./models/Wall");
 
+require("./routes/main")(app);
+
 const PORT = process.env.PORT || 303;
 const server = app.listen(PORT);
 
