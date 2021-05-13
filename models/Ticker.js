@@ -20,7 +20,20 @@ const tickerSchema = new Schema({
     week: [],
     altNames: [],
     strictNameCheck: { type: Boolean, default: false },
-    type: String
+    type: String,
+    marketCap: String,
+    IPOYear: String,
+    sector: String,
+    industry: String,
+    tags: [],
+    crypto: {
+        max_supply: Number,
+        num_market_pairs: Number,
+        circulating_supply: Number,
+        total_supply: Number,
+        cmc_rank: Number,
+        quote: {}
+    }
 });
 
 tickerSchema.index({
