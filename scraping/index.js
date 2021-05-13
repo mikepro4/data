@@ -155,7 +155,7 @@ function searchVideos(ticker, fullTicker) {
             results.videos.map((result, i) => {
                 setTimeout(() => {
                     checkVideo(result, ticker, fullTicker)
-                }, i*10000)
+                }, i*1000)
             })
     }).catch((err) => console.log(err));
 }
