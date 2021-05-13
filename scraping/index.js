@@ -170,7 +170,7 @@ function matchTitle(video, ticker, fullTicker) {
             let valid = false
     
             fullTicker.altNames.map((name) => {
-                console.log(name)
+                // console.log(name)
                 if(video.title.indexOf(name) !== -1) {
                     valid = true
                 }
@@ -188,7 +188,7 @@ function matchTitle(video, ticker, fullTicker) {
                 let valid = false
         
                 fullTicker.altNames.map((name) => {
-                    console.log(name)
+                    // console.log(na÷me)
                     if(video.title.indexOf(name) !== -1) {
                         valid = true
                     }
