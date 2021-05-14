@@ -84,6 +84,75 @@ var job = new CronJob(
 
 job.start()
 
+var updateChannelCounts = new CronJob(
+    // '0/30 * * * * *',
+    '* * * * *',
+    function() {
+
+        // Controller
+        //     .searchTickers(
+        //     )
+        //     .then(results => {
+        //         _.map(results, async (record, i) => {
+        //             setTimeout(() => {
+        
+        //                 updateLast24Hours(record)
+            
+        //                 console.log({
+        //                     type: "update count",
+        //                     ticker: record.metadata.symbol,
+        //                 });
+        //             }, i*500)
+        //         })
+        //     }).catch((err) => console.log(err));
+        },
+    null,
+    true,
+    'America/Los_Angeles'
+);
+
+updateChannelCounts.start()
+
+updateChannelFollowers = async () =>  {
+    console.log("update channel followers")
+
+     Controller
+            .searchChannels(
+            )
+            .then(results => {
+                _.map(results, async (record, i) => {
+                    setTimeout(async () => {
+        
+                        getChannelSubscribers(record.metadata.link).then(count => {
+                            Channel.updateOne(
+                                {
+                                    _id: record._id
+                                },
+                                {
+                                    $set: { followers: count }
+                                },
+                                async (err, info) => {
+                                    if (info) {
+    
+                                        console.log({
+                                            type: "update subs",
+                                            channel: record.metadata.link,
+                                            subs: count,
+                                            i: i,
+                                            percent: (i*100/results.length).toFixed(2),
+                                            count: results.length
+                                        });
+                                    }
+                                }
+                            );
+                        })
+                        
+                    }, i*250)
+                })
+            }).catch((err) => console.log(err));
+
+}
+
 // Initial start
 
 function initialSetup() {
@@ -91,6 +160,8 @@ function initialSetup() {
         try {
             Scraping.findOne({}, async (err, scraping) => {
                 if (scraping) {
+                     updateChannelFollowers()
+
                     // scraperStatus.active = scraping.scrapingSearchActive
                     scraperStatus.active = false // Change this later
 

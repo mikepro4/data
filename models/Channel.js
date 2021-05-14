@@ -12,7 +12,8 @@ const channelSchema = new Schema({
         thumbnail: String
     },
     linkedTickers: [],
-    bullScore: { type: Number, default: 0}
+    bullScore: { type: Number, default: 0},
+    followers: Number
 });
 
 channelSchema.index({
