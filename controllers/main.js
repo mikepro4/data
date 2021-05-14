@@ -1,5 +1,4 @@
 const request = require('request-promise');
-const keys = require("../config/keys");
 const mongoose = require("mongoose");
 
 const Ticker = mongoose.model("tickers");
