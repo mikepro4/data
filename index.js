@@ -72,4 +72,4 @@ io.on('connection',(socket)=>{
 
 })
 
-// require("./scraping/") (io);
+require("./scraping/") (io);

@@ -18,8 +18,6 @@ const Scraping = mongoose.model("scraping");
 
 const keys = require("./../config/keys");
 
-const Tickers = require("./tickers.json");
-
 let io
 
 module.exports = socket => {
