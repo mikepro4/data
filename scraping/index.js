@@ -18,9 +18,6 @@ const Scraping = mongoose.model("scraping");
 
 const keys = require("./../config/keys");
 
-const parse = require('csv-parse');
-const fs = require('fs');
-
 const Tickers = require("./tickers.json");
 
 let io
