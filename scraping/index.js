@@ -130,7 +130,7 @@ function searchAll() {
                         count: results.length
                     });
         
-                }, i*50)
+                }, i*500)
             })
     }).catch((err) => console.log(err));
 }
@@ -147,13 +147,19 @@ function searchVideos(ticker, fullTicker) {
         'CAASBAgCEAE'
     ];
     var randomNumber = Math.floor(Math.random()*sortArray.length);
+
+    var sortArrayProxy = [
+        'http://urlrouter1.herokuapp.com/',
+        'http://urlrouter2.herokuapp.com/'
+    ];
+    var randomProxy = Math.floor(Math.random()*sortArrayProxy.length);
     
 
     YoutubeSearch
         .search(
             ticker, 
             {sp: sortArray[randomNumber]},
-            "http://urlrouter1.herokuapp.com/",
+            sortArrayProxy[randomProxy],
             fullTicker
         )
         .then(results => {
@@ -256,12 +262,12 @@ function checkVideo(video, ticker, fullTicker) {
 
 
                     if(!result) {
-                        console.log("add video")
                         // createVideoLog(video, ticker, "add")
                         
                         if(matchTitle(video, ticker, fullTicker)) {
-                            const channelCount = await getChannelSubscribers(video.channel.link)
-                            if(channelCount) {
+                            // const channelCount = await getChannelSubscribers(video.channel.link)
+                            // console.log(channelCount)
+                            // if(channelCount) {
                                 const newVideo = await new Video({
                                     createdAt: new Date(),
                                     linkedTickers: [
@@ -275,19 +281,19 @@ function checkVideo(video, ticker, fullTicker) {
                                         {
                                             symbol: ticker
                                         }
-                                    ],
-                                    reach: channelCount
+                                    ]
                                 }).save();
 
                                 if(newVideo) {
+                                    console.log("add video")
                                     updateLast24Hours(fullTicker)
                                     resolve(video)
                                 }
-                            }
+                            // }
                             
                         } else {
-                            const channelCount = await getChannelSubscribers(video.channel.link)
-                            if(channelCount) {
+                            // const channelCount = await getChannelSubscribers(video.channel.link)
+                            // if(channelCount) {
                                 const newVideo2 = await new Video({
                                     createdAt: new Date(),
                                     linkedTickers: [
@@ -296,15 +302,14 @@ function checkVideo(video, ticker, fullTicker) {
                                         }
                                     ],
                                     googleId: video.id,
-                                    metadata: video,
-                                    reach: channelCount
+                                    metadata: video
                                 }).save();
 
                                 if(newVideo2) {
                                     updateLast24Hours(fullTicker)
                                     resolve(video)
                                 }
-                            }
+                            // }
                         }
 
                         checkIfChannelExists(video.channel, ticker)
