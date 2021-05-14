@@ -7,7 +7,6 @@ const Ticker = mongoose.model("tickers");
 const Video = mongoose.model("videos");
 const Channel = mongoose.model("channels");
 const Group = mongoose.model("groups");
-const fs = require('fs');
 
 
 module.exports = app => {
