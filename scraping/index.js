@@ -201,7 +201,7 @@ function searchAll() {
                         count: results.length
                     });
         
-                }, i*500)
+                }, i*150)
             })
     }).catch((err) => console.log(err));
 }
