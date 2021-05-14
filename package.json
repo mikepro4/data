@@ -56,7 +56,6 @@
 		"socket.io": "^3.1.2",
 		"streamifier": "^0.1.1",
 		"uuid": "^8.3.2",
-		"yahoo-finance": "^0.3.7",
-		"yt-subscription-count-scraper": "^1.0.6"
+		"yahoo-finance": "^0.3.7"
 	}
 }
