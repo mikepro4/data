@@ -1,3 +1,4 @@
+const axios = require("axios")
 const request = require('request-promise');
 const keys = require("./../config/keys");
 
@@ -204,4 +205,117 @@ function createProxyLog(proxy, ticker, type) {
         }
         
     })
+}
+
+requestVideoPage = async (channelURL, proxy) => {
+    try {
+        return await axios.post(proxy + "get", {
+            url: channelURL
+        })
+    } catch (e) {
+        return {
+            error: true,
+            message: e
+        }
+    }
+}
+
+
+// function requestVideoPage(channelURL, proxy) {
+
+//     return new Promise((resolve, reject) => {
+
+        
+//         console.log(channelURL)
+//         request({
+//             url: proxy + "get",
+//             timeout: "15000",
+//             method: 'POST',
+//             body: {
+//                 url: channelURL
+//             },
+//             headers: {
+//                 'x-youtube-client-name': '1',
+//                 'x-youtube-client-version': '2.20180222',
+//                 'accept-language': 'en-US,en;q=0.5'
+//             },
+//             json: true
+//         })
+//         .then((response) => {resolve(response)})
+//         .catch((err) => {
+//             console.log(err)
+//             if(err.statusCode == 429) {
+//                 console.log("banned " + proxy)
+//                 // createProxyLog(proxy, query, "banned")
+//             } else {
+//                 console.log(err)
+//                 // createProxyLog(proxy, query, "error")
+//             }
+//         })
+//     });
+
+// }
+
+scrape_subscriber_count_from_channel = async (channelURL, proxy) =>{
+    const html_data = await requestVideoPage(channelURL, proxy);
+    const count = await parse_html(html_data.data);
+    return count
+    // console.log(html_data.data)
+    // return parse_html(html_data.data)
+}
+
+function parse_html(page){
+
+    return new Promise((resolve, reject) => {
+        try {
+            const results = {
+                videos: [],
+                playlists: [],
+                streams: []
+            };
+
+            // #1 - Remove line breaks
+            page = page.split('\n').join('');
+            // // #2 - Split at start of data
+            page = page.split('var ytInitialData')[1];
+
+            // // #3 - Remove the first equals sign
+            const spot = page.split('=');
+            spot.shift();
+            // // #4 - Join the split data and split again at the closing tag
+            const data = spot.join('=').split(';</script>')[0];
+
+
+            let render = null;
+            let count = 0
+            let subscriberString = JSON.parse(data).header.c4TabbedHeaderRenderer.subscriberCountText.accessibility.accessibilityData.label
+            const stringSequences = subscriberString.split(" ")
+            if (stringSequences[0].charAt(stringSequences[0].length-1) === 'K') {
+                count = Number(stringSequences[0].substring(0, stringSequences[0].length-1)) * 1000
+            } else if (stringSequences[1] === 'million') {
+                count = Number(stringSequences[0].substring(0, stringSequences[0].length-1)) * 1000000
+            } else {
+                count = Number(stringSequences[0].substring(0, stringSequences[0].length))
+            }
+            console.log(stringSequences)
+            
+
+            resolve(count);
+        } catch (e) {
+            // console.warn(e);
+            reject('Fatal error when parsing result data. Please report this on GitHub');
+        }
+    });
+}
+
+
+exports.getChannelSubscriptions = function(channel, proxy) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const count = await scrape_subscriber_count_from_channel(channel, proxy);
+            resolve(count);
+        } catch (e) {
+            reject(e);
+        }
+    });
 }

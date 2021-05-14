@@ -32,6 +32,7 @@ const videoSchema = new Schema({
 			symbol: String
 		}
 	],
+    reach: Number
 });
 
 videoSchema.index({
