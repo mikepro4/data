@@ -221,47 +221,10 @@ requestVideoPage = async (channelURL, proxy) => {
 }
 
 
-// function requestVideoPage(channelURL, proxy) {
-
-//     return new Promise((resolve, reject) => {
-
-        
-//         console.log(channelURL)
-//         request({
-//             url: proxy + "get",
-//             timeout: "15000",
-//             method: 'POST',
-//             body: {
-//                 url: channelURL
-//             },
-//             headers: {
-//                 'x-youtube-client-name': '1',
-//                 'x-youtube-client-version': '2.20180222',
-//                 'accept-language': 'en-US,en;q=0.5'
-//             },
-//             json: true
-//         })
-//         .then((response) => {resolve(response)})
-//         .catch((err) => {
-//             console.log(err)
-//             if(err.statusCode == 429) {
-//                 console.log("banned " + proxy)
-//                 // createProxyLog(proxy, query, "banned")
-//             } else {
-//                 console.log(err)
-//                 // createProxyLog(proxy, query, "error")
-//             }
-//         })
-//     });
-
-// }
-
 scrape_subscriber_count_from_channel = async (channelURL, proxy) =>{
     const html_data = await requestVideoPage(channelURL, proxy);
     const count = await parse_html(html_data.data);
     return count
-    // console.log(html_data.data)
-    // return parse_html(html_data.data)
 }
 
 function parse_html(page){
@@ -297,13 +260,11 @@ function parse_html(page){
             } else {
                 count = Number(stringSequences[0].substring(0, stringSequences[0].length))
             }
-            console.log(stringSequences)
-            
 
             resolve(count);
         } catch (e) {
             // console.warn(e);
-            reject('Fatal error when parsing result data. Please report this on GitHub');
+            reject();
         }
     });
 }

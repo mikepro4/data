@@ -139,6 +139,7 @@ initialSetup()
 
 /////////////////////////////////////////
 
+
 function searchVideos(ticker, fullTicker) {
 
     var sortArray = [
@@ -163,7 +164,18 @@ function searchVideos(ticker, fullTicker) {
             })
     }).catch((err) => console.log(err));
 }
-    
+
+module.exports.searchSingleTicker = function(ticker, fullTicker) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            searchVideos(ticker,fullTicker)
+            resolve()
+        }catch (e) {
+            reject(e);
+        }
+
+    })
+}
 
 /////////////////////////////////////////
 

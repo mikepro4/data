@@ -8,21 +8,29 @@ const Video = mongoose.model("videos");
 const Channel = mongoose.model("channels");
 const Group = mongoose.model("groups");
 
+const Youtube = require("../scraping/index");
 
 module.exports = app => {
 
-	// app.get("/refresh_data", async (req, res) => {
-	// 	// const { username } = req.body;
-	// 	return Ticker.find(
-	// 		{
-	// 			"active": { $eq: true }
-	// 		},
-	// 		async (err, result) => {
-    //             fs.writeFileSync('scraping/tickers.json', JSON.stringify(result));
-	// 			res.json(result);
-	// 		}
-	// 	);
-	// });
+	app.post("/searchSingleTicker", async (req, res) => {
+		Ticker.findOne({ "metadata.symbol":  req.body.symbol}, async (err, ticker) => {
+			if (ticker) {
+
+				Youtube
+					.searchSingleTicker(
+						req.body.symbol, 
+						ticker
+					)
+					.then(results => {
+						res.json("good");
+				}).catch((err) => console.log(err));
+
+				// res.json(ticker);
+			} else {
+				res.json("bad");
+			}
+		});
+	});
 	
 };
 
