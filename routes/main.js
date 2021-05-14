@@ -12,18 +12,18 @@ const fs = require('fs');
 
 module.exports = app => {
 
-	app.get("/refresh_data", async (req, res) => {
-		// const { username } = req.body;
-		return Ticker.find(
-			{
-				"active": { $eq: true }
-			},
-			async (err, result) => {
-                fs.writeFileSync('scraping/tickers.json', JSON.stringify(result));
-				res.json(result);
-			}
-		);
-	});
+	// app.get("/refresh_data", async (req, res) => {
+	// 	// const { username } = req.body;
+	// 	return Ticker.find(
+	// 		{
+	// 			"active": { $eq: true }
+	// 		},
+	// 		async (err, result) => {
+    //             fs.writeFileSync('scraping/tickers.json', JSON.stringify(result));
+	// 			res.json(result);
+	// 		}
+	// 	);
+	// });
 	
 };
 
