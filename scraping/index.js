@@ -622,58 +622,59 @@ function updateLast24Hours(ticker) {
                     if (info) {
                         console.log("updated count 24",  ticker.metadata.symbol)
 
-                        Video.find({
-                            "createdAt":{ 
-                                $gt:new Date(Date.now() - 24*2*60*60 * 1000),
-                                $lt:new Date(Date.now() - 24*60*60 * 1000)
-                            },
-                            approvedFor: {
-                                $elemMatch: { symbol: { $eq: ticker.metadata.symbol} }
-                            }
-                        }, async(err, result) => {
-                            if(!result) {
-                                resolve()
-                            } else {
-                                Ticker.updateOne(
-                                    {
-                                        "metadata.symbol": { $eq: ticker.metadata.symbol} 
-                                    },
-                                    {
-                                        $set: { last48hours: result.length }
-                                    },
-                                    async (err, info) => {
-                                        if (info) {
-                                            console.log("updated count 48",  ticker.metadata.symbol)
+                        // Video.find({
+                        //     "createdAt":{ 
+                        //         $gt:new Date(Date.now() - 24*2*60*60 * 1000),
+                        //         $lt:new Date(Date.now() - 24*60*60 * 1000)
+                        //     },
+                        //     approvedFor: {
+                        //         $elemMatch: { symbol: { $eq: ticker.metadata.symbol} }
+                        //     }
+                        // }, async(err, result) => {
+                        //     if(!result) {
+                        //         resolve()
+                        //     } else {
+                        //         Ticker.updateOne(
+                        //             {
+                        //                 "metadata.symbol": { $eq: ticker.metadata.symbol} 
+                        //             },
+                        //             {
+                        //                 $set: { last48hours: result.length }
+                        //             },
+                        //             async (err, info) => {
+                        //                 if (info) {
+                        //                     console.log("updated count 48",  ticker.metadata.symbol)
 
-                                            Video.find({
-                                                "createdAt":{ $gt:new Date(Date.now() - 24*7*60*60 * 1000)},
-                                                approvedFor: {
-                                                    $elemMatch: { symbol: { $eq: ticker.metadata.symbol} }
-                                                }
-                                            }, async(err, result) => {
-                                                if(!result) {
-                                                    resolve()
-                                                } else {
-                                                    Ticker.updateOne(
-                                                        {
-                                                            "metadata.symbol": { $eq: ticker.metadata.symbol} 
-                                                        },
-                                                        {
-                                                            $set: { thisWeek: result.length }
-                                                        },
-                                                        async (err, info) => {
-                                                            if (info) {
-                                                                console.log("week")
-                                                            }
-                                                        }
-                                                    );
-                                                }
-                                            })
-                                        }
-                                    }
-                                );
-                            }
-                        })
+                        //                     Video.find({
+                        //                         "createdAt":{ $gt:new Date(Date.now() - 24*7*60*60 * 1000)},
+                        //                         approvedFor: {
+                        //                             $elemMatch: { symbol: { $eq: ticker.metadata.symbol} }
+                        //                         }
+                        //                     }, async(err, result) => {
+                        //                         if(!result) {
+                        //                             resolve()
+                        //                         } else {
+
+                        //                             Ticker.updateOne(
+                        //                                 {
+                        //                                     "metadata.symbol": { $eq: ticker.metadata.symbol} 
+                        //                                 },
+                        //                                 {
+                        //                                     $set: { thisWeek: result.length }
+                        //                                 },
+                        //                                 async (err, info) => {
+                        //                                     if (info) {
+                        //                                         console.log("week")
+                        //                                     }
+                        //                                 }
+                        //                             );
+                        //                         }
+                        //                     })
+                        //                 }
+                        //             }
+                        //         );
+                        //     }
+                        // })
                     }
                 }
             );
