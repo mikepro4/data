@@ -664,7 +664,6 @@ function updateLast24Hours(ticker) {
                                                         async (err, info) => {
                                                             if (info) {
                                                                 console.log("week")
-                                                                resolve(info)
                                                             }
                                                         }
                                                     );
