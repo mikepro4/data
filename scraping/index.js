@@ -73,7 +73,7 @@ var job = new CronJob(
                             type: "update count",
                             ticker: record.metadata.symbol,
                         });
-                    }, i*500)
+                    }, i*1000)
                 })
             }).catch((err) => console.log(err));
         },
@@ -201,7 +201,7 @@ function searchAll() {
                         count: results.length
                     });
         
-                }, i*150)
+                }, i*500)
             })
     }).catch((err) => console.log(err));
 }
