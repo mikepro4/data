@@ -601,6 +601,9 @@ function createVideoLog(video, ticker, type) {
 }
 
 function updateLast24Hours(ticker) {
+    let today
+    let yesterday
+    let week
 
     Video.find({
         "createdAt":{ $gt:new Date(Date.now() - 24*60*60 * 1000)},
@@ -611,6 +614,9 @@ function updateLast24Hours(ticker) {
         if(!result) {
             resolve()
         } else {
+
+            today = result.length
+            
             Ticker.updateOne(
                 {
                     "metadata.symbol": { $eq: ticker.metadata.symbol} 
@@ -634,6 +640,8 @@ function updateLast24Hours(ticker) {
                             if(!result) {
                                 resolve()
                             } else {
+                                yesterday = result.length
+
                                 Ticker.updateOne(
                                     {
                                         "metadata.symbol": { $eq: ticker.metadata.symbol} 
@@ -654,13 +662,28 @@ function updateLast24Hours(ticker) {
                                                 if(!result) {
                                                     resolve()
                                                 } else {
+                                                    week = result.length
+
+                                                    let growthRate24
+
+                                                    if(yesterday == 0) {
+                                                        growthRate24 = today * 100
+                                                    } else {
+                                                        growthRate24 = (today * 100 / yesterday) - 100
+                                                    }
+
+                                                    let score = (week * 100 + today * 250 + yesterday * 200 + growthRate24 * 175)/(100+250+200+175)
 
                                                     Ticker.updateOne(
                                                         {
                                                             "metadata.symbol": { $eq: ticker.metadata.symbol} 
                                                         },
                                                         {
-                                                            $set: { thisWeek: result.length }
+                                                            $set: { 
+                                                                thisWeek: result.length,
+                                                                growthRate24: growthRate24,
+                                                                score: score
+                                                            }
                                                         },
                                                         async (err, info) => {
                                                             if (info) {
