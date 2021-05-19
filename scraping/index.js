@@ -163,7 +163,7 @@ function initialSetup() {
                     //  updateChannelFollowers()
 
                     // scraperStatus.active = scraping.scrapingSearchActive
-                    scraperStatus.active = false // Change this later
+                    scraperStatus.active = true // Change this later
 
                     if(scraperStatus.active) {
                         searchAll()
