@@ -657,7 +657,7 @@ updateLast24Hours =  async(ticker) => {
             },
             async (err, info) => {
                 if (info) {
-                    console.log(ticker, today, yesterday, week)
+                    console.log(ticker.metadata.symbol, today, yesterday, week)
                 }
             }
         );
