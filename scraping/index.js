@@ -163,7 +163,7 @@ function initialSetup() {
                     //  updateChannelFollowers()
 
                     // scraperStatus.active = scraping.scrapingSearchActive
-                    scraperStatus.active = true // Change this later
+                    scraperStatus.active = false // Change this later
 
                     if(scraperStatus.active) {
                         searchAll()
@@ -600,109 +600,169 @@ function createVideoLog(video, ticker, type) {
     })
 }
 
-function updateLast24Hours(ticker) {
-    let today
-    let yesterday
-    let week
+updateLast24Hours =  async(ticker) => {
+    // let today
+    // let yesterday
+    // let week
 
-    Video.find({
+    const today = await Video.countDocuments({
         "createdAt":{ $gt:new Date(Date.now() - 24*60*60 * 1000)},
         approvedFor: {
             $elemMatch: { symbol: { $eq: ticker.metadata.symbol} }
         }
-    }, async(err, result) => {
-        if(!result) {
-            resolve()
-        } else {
+    })
 
-            today = result.length
-            
-            Ticker.updateOne(
-                {
-                    "metadata.symbol": { $eq: ticker.metadata.symbol} 
-                },
-                {
-                    $set: { last24hours: result.length }
-                },
-                async (err, info) => {
-                    if (info) {
-                        console.log("updated count 24",  ticker.metadata.symbol)
-
-                        Video.find({
-                            "createdAt":{ 
-                                $gt:new Date(Date.now() - 24*2*60*60 * 1000),
-                                $lt:new Date(Date.now() - 24*60*60 * 1000)
-                            },
-                            approvedFor: {
-                                $elemMatch: { symbol: { $eq: ticker.metadata.symbol} }
-                            }
-                        }, async(err, result) => {
-                            if(!result) {
-                                resolve()
-                            } else {
-                                yesterday = result.length
-
-                                Ticker.updateOne(
-                                    {
-                                        "metadata.symbol": { $eq: ticker.metadata.symbol} 
-                                    },
-                                    {
-                                        $set: { last48hours: result.length }
-                                    },
-                                    async (err, info) => {
-                                        if (info) {
-                                            console.log("updated count 48",  ticker.metadata.symbol)
-
-                                            Video.find({
-                                                "createdAt":{ $gt:new Date(Date.now() - 24*7*60*60 * 1000)},
-                                                approvedFor: {
-                                                    $elemMatch: { symbol: { $eq: ticker.metadata.symbol} }
-                                                }
-                                            }, async(err, result) => {
-                                                if(!result) {
-                                                    resolve()
-                                                } else {
-                                                    week = result.length
-
-                                                    let growthRate24
-
-                                                    if(yesterday == 0) {
-                                                        growthRate24 = today * 100
-                                                    } else {
-                                                        growthRate24 = (today * 100 / yesterday) - 100
-                                                    }
-
-                                                    let score = (week * 100 + today * 250 + yesterday * 200 + growthRate24 * 175)/(100+250+200+175)
-
-                                                    Ticker.updateOne(
-                                                        {
-                                                            "metadata.symbol": { $eq: ticker.metadata.symbol} 
-                                                        },
-                                                        {
-                                                            $set: { 
-                                                                thisWeek: result.length,
-                                                                growthRate24: growthRate24,
-                                                                score: score
-                                                            }
-                                                        },
-                                                        async (err, info) => {
-                                                            if (info) {
-                                                                console.log("week")
-                                                            }
-                                                        }
-                                                    );
-                                                }
-                                            })
-                                        }
-                                    }
-                                );
-                            }
-                        })
-                    }
-                }
-            );
+    const yesterday = await Video.countDocuments({
+        "createdAt":{ 
+            $gt:new Date(Date.now() - 24*2*60*60 * 1000),
+            $lt:new Date(Date.now() - 24*60*60 * 1000)
+        },
+        approvedFor: {
+            $elemMatch: { symbol: { $eq: ticker.metadata.symbol} }
         }
     })
+
+    const week = await Video.countDocuments({
+        "createdAt":{ $gt:new Date(Date.now() - 24*7*60*60 * 1000)},
+        approvedFor: {
+            $elemMatch: { symbol: { $eq: ticker.metadata.symbol} }
+        }
+    })
+
+    if(today && yesterday && week) {
+        console.log(today, yesterday, week)
+
+        let growthRate24
+
+        if(yesterday == 0) {
+            growthRate24 = today * 100
+        } else {
+            growthRate24 = (today * 100 / yesterday) - 100
+        }
+
+        let score = (week * 100 + today * 250 + yesterday * 200 + growthRate24 * 175)/(100+250+200+175)
+
+        Ticker.updateOne(
+            {
+                "metadata.symbol": { $eq: ticker.metadata.symbol} 
+            },
+            {
+                $set: { 
+                    last24hours: today,
+                    last48hours: yesterday,
+                    thisWeek: week,
+                    growthRate24: growthRate24,
+                    score: score
+                }
+            },
+            async (err, info) => {
+                if (info) {
+                    console.log(ticker, today, yesterday, week)
+                }
+            }
+        );
+    }
+
+
+
+    // Video.find({
+    //     "createdAt":{ $gt:new Date(Date.now() - 24*60*60 * 1000)},
+    //     approvedFor: {
+    //         $elemMatch: { symbol: { $eq: ticker.metadata.symbol} }
+    //     }
+    // }, async(err, result) => {
+    //     if(!result) {
+    //         resolve()
+    //     } else {
+
+    //         today = result.length
+            
+    //         Ticker.updateOne(
+    //             {
+    //                 "metadata.symbol": { $eq: ticker.metadata.symbol} 
+    //             },
+    //             {
+    //                 $set: { last24hours: result.length }
+    //             },
+    //             async (err, info) => {
+    //                 if (info) {
+    //                     console.log("updated count 24",  ticker.metadata.symbol)
+
+    //                     Video.find({
+    //                         "createdAt":{ 
+    //                             $gt:new Date(Date.now() - 24*2*60*60 * 1000),
+    //                             $lt:new Date(Date.now() - 24*60*60 * 1000)
+    //                         },
+    //                         approvedFor: {
+    //                             $elemMatch: { symbol: { $eq: ticker.metadata.symbol} }
+    //                         }
+    //                     }, async(err, result) => {
+    //                         if(!result) {
+    //                             resolve()
+    //                         } else {
+    //                             yesterday = result.length
+
+    //                             Ticker.updateOne(
+    //                                 {
+    //                                     "metadata.symbol": { $eq: ticker.metadata.symbol} 
+    //                                 },
+    //                                 {
+    //                                     $set: { last48hours: result.length }
+    //                                 },
+    //                                 async (err, info) => {
+    //                                     if (info) {
+    //                                         console.log("updated count 48",  ticker.metadata.symbol)
+
+    //                                         Video.find({
+    //                                             "createdAt":{ $gt:new Date(Date.now() - 24*7*60*60 * 1000)},
+    //                                             approvedFor: {
+    //                                                 $elemMatch: { symbol: { $eq: ticker.metadata.symbol} }
+    //                                             }
+    //                                         }, async(err, result) => {
+    //                                             if(!result) {
+    //                                                 resolve()
+    //                                             } else {
+    //                                                 week = result.length
+
+    //                                                 let growthRate24
+
+    //                                                 if(yesterday == 0) {
+    //                                                     growthRate24 = today * 100
+    //                                                 } else {
+    //                                                     growthRate24 = (today * 100 / yesterday) - 100
+    //                                                 }
+
+    //                                                 let score = (week * 100 + today * 250 + yesterday * 200 + growthRate24 * 175)/(100+250+200+175)
+
+    //                                                 Ticker.updateOne(
+    //                                                     {
+    //                                                         "metadata.symbol": { $eq: ticker.metadata.symbol} 
+    //                                                     },
+    //                                                     {
+    //                                                         $set: { 
+    //                                                             thisWeek: result.length,
+    //                                                             growthRate24: growthRate24,
+    //                                                             score: score
+    //                                                         }
+    //                                                     },
+    //                                                     async (err, info) => {
+    //                                                         if (info) {
+    //                                                             console.log("week")
+    //                                                         }
+    //                                                     }
+    //                                                 );
+    //                                             }
+    //                                         })
+    //                                     }
+    //                                 }
+    //                             );
+    //                         }
+    //                     })
+    //                 }
+    //             }
+    //         );
+    //     }
+    // })
 }
 
 
